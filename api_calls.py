@@ -10,6 +10,7 @@ def annuaire_entreprise(
     sector:str=None
 ) -> (List, List, List):
     """
+    FOR COMPANIES
     Documentation: https://api.gouv.fr/documentation/api-recherche-entreprises
     """
     url = "https://recherche-entreprises.api.gouv.fr/search"
@@ -27,8 +28,25 @@ def annuaire_entreprise(
         official_names = [company["nom_raison_sociale"] for company in results]
         full_names = [company["nom_complet"] for company in results]
         sirens = [company["siren"] for company in results]
-        return sirens, official_names, full_names
+        return sirens, official_names, usual_names
     except Exception as e:
         #return [], [], []
         raise e
 
+def social_gouv(name:str, address:str=None):
+    """
+    FOR ETABLISSEMENTS (very different from annuaire entreprise)
+    """
+    url = "https://api.recherche-entreprises.fabrique.social.gouv.fr/api/v1/search"
+    params = {"query": name, "limit" : 1, "matchingLimit": "-1", "convention": False, "open": False, "employer": False}
+    if address is not None:
+        params["address"] = address
+    try:
+        results = json.loads(requests.get(url, params=params).content)["entreprises"]
+        official_names = [company["label"] for company in results]
+        full_names = [company["simpleLabel"] for company in results]
+        sirens = [company["siren"] for company in results]
+        return sirens, official_names, usual_names
+    except Exception as e:
+        #return [], [], []
+        raise e
