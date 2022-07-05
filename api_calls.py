@@ -28,7 +28,7 @@ def annuaire_entreprise(
         official_names = [company["nom_raison_sociale"] for company in results]
         full_names = [company["nom_complet"] for company in results]
         sirens = [company["siren"] for company in results]
-        return sirens, official_names, usual_names
+        return sirens, official_names, full_names
     except Exception as e:
         #return [], [], []
         raise e
@@ -46,7 +46,7 @@ def social_gouv(name:str, address:str=None):
         official_names = [company["label"] for company in results]
         full_names = [company["simpleLabel"] for company in results]
         sirens = [company["siren"] for company in results]
-        return sirens, official_names, usual_names
+        return sirens, official_names, full_names
     except Exception as e:
         #return [], [], []
         raise e
