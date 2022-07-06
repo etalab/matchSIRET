@@ -13,7 +13,10 @@ def score_companies(algorithm: str, sirens: List[str], names: List[str], zipcode
             found_sirens, found_names, found_usual_names = annuaire_entreprise(name=name,zipcode=zipcode)
         elif algorithm == "social-gouv":
             found_sirens, found_names, found_usual_names = social_gouv(name=name, address=zipcode)
-        most_probable_siren = found_sirens[0]
-        score += (most_probable_siren == sirens[k])
+        try:
+            most_probable_siren = found_sirens[0]
+            score += (most_probable_siren == sirens[k])
+        except IndexError:
+            continue
     return score / max(len(sirens),1)
     
