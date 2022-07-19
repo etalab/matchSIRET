@@ -8,7 +8,7 @@ def annuaire_entreprise(
     zipcode:str=None,
     activity:str=None,
     sector:str=None
-) -> (List, List, List):
+) -> (List, List, List, List):
     """
     FOR COMPANIES
     Documentation: https://api.gouv.fr/documentation/api-recherche-entreprises
@@ -28,14 +28,15 @@ def annuaire_entreprise(
         official_names = [company["nom_raison_sociale"] for company in results]
         full_names = [company["nom_complet"] for company in results]
         sirens = [company["siren"] for company in results]
-        return sirens, official_names, full_names
+        return sirens, [], official_names, full_names
     except Exception as e:
         #return [], [], []
         raise e
 
-def social_gouv(name:str, address:str=None):
+def social_gouv(name:str, address:str=None) -> (List, List, List, List):
     """
-    FOR ETABLISSEMENTS (very different from annuaire entreprise)
+    FOR PLANTS (very different from annuaire entreprise)
+    If there is several plants matching the given name and address, returns the first one (that may impact the performances)
     """
     url = "https://api.recherche-entreprises.fabrique.social.gouv.fr/api/v1/search"
     params = {"query": name, "limit" : 1, "matchingLimit": "-1", "convention": False, "open": False, "employer": False}
@@ -46,7 +47,14 @@ def social_gouv(name:str, address:str=None):
         official_names = [company["label"] for company in results]
         full_names = [company["simpleLabel"] for company in results]
         sirens = [company["siren"] for company in results]
-        return sirens, official_names, full_names
+        sirets = []
+        for company in results:
+            if len(company["allMatchingEtablissements"]):
+                sirets.append(company["allMatchingEtablissements"][0]["siret"])
+            else:
+                sirets.append("")
+                
+        return sirens, sirets, official_names, full_names
     except Exception as e:
         #return [], [], []
         raise e
