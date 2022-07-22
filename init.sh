@@ -9,7 +9,9 @@ git clone --depth 1 $REPO_URL $CLONE_DIR
 
 # Put RFPE data in the working dir
 cd ${WORK_DIR}
-mc cp s3/projet-funathon/diffusion/rfpe.zip rfpe.zip
+
+mc cp s3/projet-funathon/diffusion/rfpe.zip rfpe.zip # Avec l'user root
+
 unzip rfpe.zip
 
 # Install additional packages if needed
@@ -18,3 +20,5 @@ REQUIREMENTS_FILE=${CLONE_DIR}/requirements.txt
 
 # Remove course Git repository
 #rm -r $CLONE_DIR
+
+chown jovyan -R /home/jovyan/ # Sinon jovyan n'a plus les droits
