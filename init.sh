@@ -18,7 +18,7 @@ unzip rfpe.zip
 REQUIREMENTS_FILE=${CLONE_DIR}/requirements.txt
 [ -f $REQUIREMENTS_FILE ] && pip install -r $REQUIREMENTS_FILE && rm $REQUIREMENTS_FILE
 
-# Remove course Git repository
-#rm -r $CLONE_DIR
+cd $CLONE_DIR
+git checkout dev
 
-chown jovyan -R /home/jovyan/ # Sinon jovyan n'a plus les droits
+chown onyxia -R /home/onyxia/ # Sinon jovyan n'a plus les droits
