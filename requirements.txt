@@ -1,3 +1,4 @@
 elasticsearch==7.17.6
 elasticsearch_dsl==7.4.0
 pydantic==1.10.2
+dataclass==0.8
