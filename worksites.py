@@ -91,4 +91,3 @@ def geocode_worksites(
     os.remove("tmp_workplaces.csv")
     
     return geoworksites
-    

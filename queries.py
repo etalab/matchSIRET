@@ -1,6 +1,6 @@
 import elasticsearch as es
 from typing import Dict, List
-from math import cos, pi, isnan
+from math import isnan
 from worksites import GeoWorkSiteName
 
 
@@ -27,7 +27,7 @@ def request_elastic(
         }
     }
 
-    # TODO: this thresholding on geocoding quality is arbitrary and realy important
+    # TODO: the choice of thresholding on geocoding has strong impact. Adapt it to your usecase.
     if geowk.score >= geo_threshold:
         
         q["bool"]["filter"] = {
@@ -81,16 +81,25 @@ def request_elastic(
                 }
             )
 
+        if geowk.__getattribute__("old_address"):
+            q["bool"]["should"].append(
+                {
+                    "multi_match": {
+                        "query": geowk.__getattribute__("old_address"),
+                        "fields": [
+                            "addresse_etablissement",
+                            "libelle_voie",
+                            "numero_voie",
+                        ],
+                    }
+                }
+            )
 
-    if geowk.__getattribute__("sector"):
-        q["bool"]["should"].append(
-            {"match": {"section_activite_principale": geowk.__getattribute__("sector")}}
-        )
 
     for field in list(geowk.__dict__):
-        if field in ["score", "citycode", "address", "latitude", "longitude", "name"]:
+        if field in ["score", "citycode", "old_postcode", "old_cityname", "old_address", "address", "latitude", "longitude", "name"]:
             continue
-        elif geowk.__getattribute__(field):
+        elif geowk.__getattribute__(field): # example: 'sector'
             q["bool"]["should"].append(
                 {"match": {field: geowk.__getattribute__(field)}}
             )
