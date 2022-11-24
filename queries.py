@@ -1,35 +1,99 @@
-from pydantic import BaseModel, Field
-import datetime
+import elasticsearch as es
+from typing import Dict, List
+from math import cos, pi, isnan
+from worksites import GeoWorkSiteName
 
-class GeoPoint(BaseModel):
-    lat: float
-    lon: float
+
+def request_elastic(
+    conn: es.Elasticsearch, geowk: GeoWorkSiteName, geo_threshold: float = 0.7
+) -> List[Dict]:
+    km_tolerance = 20
+    q = {
+        "bool": {
+            "should": [
+                {
+                    "multi_match": {
+                        "query": geowk.__getattribute__("name"),
+                        "fuzziness" : "AUTO",
+                        "fields": [
+                            "nom_raison_sociale",
+                            "nom_commercial",
+                            "nom_complet",
+                            "sigle",
+                        ],
+                    }
+                },
+            ]
+        }
+    }
+
+    # TODO: this thresholding on geocoding quality is arbitrary and realy important
+    if geowk.score >= geo_threshold:
+        
+        q["bool"]["filter"] = {
+            "geo_distance": {
+                "distance": km_tolerance,
+                "coordonnees": {
+                    "lat": geowk.latitude,
+                    "lon": geowk.longitude
+                }
+            }
+        }
+        
+        if geowk.__getattribute__("address"):
+            q["bool"]["should"].append(
+                {
+                    "multi_match": {
+                        "query": geowk.__getattribute__("address"),
+                        "fields": [
+                            "addresse_etablissement",
+                            "libelle_voie",
+                            "numero_voie",
+                        ],
+                    }
+                }
+            )
+        if geowk.__getattribute__("citycode"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"commune": geowk.__getattribute__("citycode")}
+                }
+            )
+        if geowk.__getattribute__("cityname"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"libelle_commune": geowk.__getattribute__("cityname")}
+                }
+            )
+
     
-class Address(BaseModel):
-    citycode: 
+    else:
+        if geowk.__getattribute__("old_postcode"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"code_postal": geowk.__getattribute__("old_postcode")}
+                }
+            )
+        if geowk.__getattribute__("old_cityname"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"libelle_commune": geowk.__getattribute__("old_cityname")}
+                }
+            )
 
-    
-class EQuery(BaseModel):
-    sentence: str = Field(
-        ...,
-        description="""The sentence of the fulltext search,
-            ultimately processed using elasticsearch's simple_query_string""",
-    )
 
-    filters: EFilter = Field(
-        ...,
-        description="""Dictionnary of key values pairs
-            such that keys are in the list of keys of our demand/letter
-            that are LIST OF STRINGS""",
-    )
+    if geowk.__getattribute__("sector"):
+        q["bool"]["should"].append(
+            {"match": {"section_activite_principale": geowk.__getattribute__("sector")}}
+        )
 
-    
-class EWorkSite(BaseModel):
-    siret: int
-    commercial_name: Optional[str]
-    point: Optional[GeoPoint]
-    citycode: Optional[int]
-    address: Optional[str]
-    daterange: Optional[Union[datetime.datetime, Tuple[int, int]]] = None
-
-    sorting: Optional[QuerySorting] = None
+    for field in list(geowk.__dict__):
+        if field in ["score", "citycode", "address", "latitude", "longitude", "name"]:
+            continue
+        elif geowk.__getattribute__(field):
+            q["bool"]["should"].append(
+                {"match": {field: geowk.__getattribute__(field)}}
+            )
+    response = conn.search(index="siret", query=q, size=100)["hits"]["hits"]
+    response.sort(reverse=True, key=lambda f: f["_score"])
+    return response
