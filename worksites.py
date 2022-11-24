@@ -11,6 +11,7 @@ class WorkSiteName(BaseModel):
     cityname : Optional[str] = Field(default=None, description="The names of the work place cities/towns")
     address : Optional[str] = Field(default=None, description="The address of the work place")
     sector : Optional[str] = Field(default=None, description="The sector of the company")
+    siret: Optional[str] = Field(default=None, description="SIRET for testing purpose")
     
 
 class GeoWorkSiteName(BaseModel):
@@ -22,19 +23,20 @@ class GeoWorkSiteName(BaseModel):
     address : Optional[str] = Field(default=None, description="The address of the work place")
     sector : Optional[str] = Field(default=None, description="The sector of the company")
     score : float = Field(default=None, description="the confidence score of geocoding")
+    siret: Optional[str] = Field(default=None, description="SIRET for testing purpose")
     
     
     
 def geocode_worksites(
     worksites: List[WorkSiteName]
 ) -> List[GeoWorkSiteName]:
-    names, postcodes, citynames, addresses = list(), list(), list(), list()
+    names, postcodes, citynames, addresses, sirets = list(), list(), list(), list(), list()
     for worksite in worksites:
         names.append(worksite.name)
         postcodes.append(worksite.postcode)
         citynames.append(worksite.cityname)
         addresses.append(worksite.address)
-        
+        sirets.append(worksite.siret)
     del worksites
 
     df = pd.DataFrame(data={"names": names, "address": addresses, "postcode": postcodes, "city": citynames})
@@ -52,6 +54,7 @@ def geocode_worksites(
     geocoded = pd.read_csv("tmp_workplaces_geocoded.csv", dtype=str)
     assert len(geocoded) == len(names)
     geocoded["name"] = names
+    geocoded["siret"] = sirets
     geoworksites = list()
     for ind, data in geocoded.iterrows():
         if addresses[ind]: # it is not relevant to add accurate address if there was no adress in input
@@ -62,7 +65,7 @@ def geocode_worksites(
         else:
             address = None
         
-        geoworksite = GeoWorkSiteName(**{
+        info = {
             "latitude": float(data["latitude"]),
             "longitude": float(data["longitude"]),
             "name": data["name"],
@@ -70,10 +73,12 @@ def geocode_worksites(
             "cityname": data["result_city"],
             "address": address,
             "score": float(data["result_score"])
-        })
+        }
+        if "siret" in data and data["siret"]:
+            info["siret"] = data["siret"]
+        geoworksite = GeoWorkSiteName(**info)
         geoworksites.append(geoworksite)
     os.remove("tmp_workplaces_geocoded.csv")
     os.remove("tmp_workplaces.csv")
     
     return geoworksites
-    
