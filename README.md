@@ -34,7 +34,7 @@ La méthodologie d'avant-projet est décrite isur le [wiki du programme 10%](htt
 
 ## Contact
 
-La maintenance est effectué par Etalab, au sein de la Direction interministérielle du numérique
+La maintenance est effectuée par Etalab, au sein de la Direction interministérielle du numérique (DINUM) française.
 
 [lab-ia@data.gouv.fr](mailto:lab-ia@data.gouv.fr)
 
