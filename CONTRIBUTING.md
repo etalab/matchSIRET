@@ -22,7 +22,7 @@ La création de l'index Elasticsearch et de la base de données tampon SQLite s'
 
 **Piste possible** : faire des retours d'utilisation, sur la prise en main de l'outil, ses résultats, les fonctionnalités manquantes, suggérer d'autres sources de données open data supplémentaires, etc.
 
-**Mode de contribution ** : ouvrir une github issue décrivant précisément vos difficultés, bugs ou propositions de fonctionnalités
+**Mode de contribution** : ouvrir une github issue décrivant précisément vos difficultés, bugs ou propositions de fonctionnalités
 
 # Maintenance du dépôt
 
