@@ -49,11 +49,11 @@ Remarque : il peut arriver que plusoieurs établissements d'entreprise réponden
 
 Si vous êtes un réutilisateur de ce code pour une mission spécifique, il peut être pertinent pour vous d'utiliser vos propres données de validation et de les utiliser pour finetuner vos poids (dans la mesure où l'efficacité opérationnelle dépend de l'équilibrage des poids de recherche)
 
-  _iv) Finetuner le modèle__
+  _iv) Finetuner le modèle_
  
  En utiliser vos propres données de finetuning comprenant déjà des SIRET, des adresses, des libellés et tous champs très présent pour votre cas d'usage, vous pouvez finetuner les poids de recherche Elasticsearch. Pour celà, il vous suffit de modifier le fichier de poids.
 
-(Pour l'historie du projet : la méthodologie d'avant-projet est décrite sur le [wiki du programme 10%](https://github.com/etalab-ia/programme10pourcent/wiki/Ateliers-SIRETisation))
+_(Pour l'historie du projet : la méthodologie d'avant-projet est décrite sur le [wiki du programme 10%](https://github.com/etalab-ia/programme10pourcent/wiki/Ateliers-SIRETisation))_
 
 ## Projets open source liés à ce dépôt
 
