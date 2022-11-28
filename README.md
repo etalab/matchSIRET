@@ -30,7 +30,7 @@ Voir le [guide de contribution](CONTRIBUTING.md)
 
 ## Méthodologie 
 
-La méthodologie d'avant-projet est décrite isur le [wiki du programme 10%]((https://github.com/etalab-ia/programme10pourcent/wiki/Ateliers-SIRETisation) 
+La méthodologie d'avant-projet est décrite isur le [wiki du programme 10%](https://github.com/etalab-ia/programme10pourcent/wiki/Ateliers-SIRETisation) 
 
 ## Contact
 
