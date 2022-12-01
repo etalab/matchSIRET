@@ -18,6 +18,5 @@ REQUIREMENTS_FILE=${CLONE_DIR}/requirements.txt
 [ -f $REQUIREMENTS_FILE ] && pip install -r $REQUIREMENTS_FILE && rm $REQUIREMENTS_FILE
 
 cd $CLONE_DIR
-git checkout dev
 
-chown onyxia -R /home/onyxia/ # Sinon jovyan n'a plus les droits
+chown onyxia -R /home/onyxia/ # Sinon onyxia n'a plus les droits
