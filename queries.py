@@ -7,6 +7,7 @@ from worksites import GeoWorkSiteName
 def request_elastic(
     conn: es.Elasticsearch, geowk: GeoWorkSiteName, geo_threshold: float = 0.7, use_geo: bool = True
 ) -> List[Dict]:
+    is_use_geocode = False
     km_tolerance = 5
     q = {
         "bool": {
@@ -28,7 +29,7 @@ def request_elastic(
     if use_geo:
         # TODO: the choice of thresholding on geocoding has strong impact. Adapt it to your usecase.
         if geowk.score >= geo_threshold:
-
+            is_use_geocode = True
             q["bool"]["filter"] = {
                 "geo_distance": {
                     "distance": km_tolerance,
@@ -67,6 +68,7 @@ def request_elastic(
 
 
         else:
+            is_use_geocode = False
             if geowk.__getattribute__("old_postcode"):
                 q["bool"]["should"].append(
                     {
@@ -104,4 +106,69 @@ def request_elastic(
             )
     response = conn.search(index="siret", query=q, size=100)["hits"]["hits"]
     response.sort(reverse=True, key=lambda f: f["_score"])
-    return response
+    return response, is_use_geocode
+
+
+def check_if_same_score(output):
+    if output:
+        filter_output = []
+        score = output[0]["_score"]
+        for out in output:
+            if out["_score"] == score:
+                filter_output.append(out)
+            else:
+                return filter_output
+    else:
+        return []
+
+    
+def get_answer(conn, geoworksite, siret_truth:int, geo_threshold: float):
+    output, is_use_geocode = request_elastic(conn, geoworksite, geo_threshold=geo_threshold, use_geo=True)
+    output = check_if_same_score(output)
+    if output:
+        for out in output:
+            if out["_source"]["siret"] == siret_truth:
+                return out
+    else:
+        output, is_use_geocode = request_elastic(conn, geoworksite, use_geo=False)
+        output = check_if_same_score(output)
+        if output:
+            for out in output:
+                if out["_source"]["siret"] == siret_truth:
+                    return out
+        else:
+            return
+
+        
+def get_match_response(conn, geoworksite, siret_truth:int, geo_threshold: float):
+    output, is_use_geocode = request_elastic(conn, geoworksite, geo_threshold=geo_threshold, use_geo=True)
+    output = check_if_same_score(output)
+    if output:
+        for out in output:
+            if out["_source"]["siret"] == siret_truth:
+                return out, True, is_use_geocode
+        else:
+            output, is_use_geocode = request_elastic(conn, geoworksite, use_geo=False)
+            output = check_if_same_score(output)
+            if output:
+                for out in output:
+                    if out["_source"]["siret"] == siret_truth:
+                        return out, True, is_use_geocode
+                return out, False, is_use_geocode
+            else:
+                return None, False, is_use_geocode 
+    else:
+        output, is_use_geocode = request_elastic(conn, geoworksite, use_geo=False)
+        output = check_if_same_score(output)
+        if output:
+            for out in output:
+                if out["_source"]["siret"] == siret_truth:
+                    return out, True, is_use_geocode
+            return out, False, is_use_geocode
+        else:
+            return None, False, is_use_geocode
+
+        
+def all_relevant_elastic_answers(conn, geoworksite, geo_threshold:float):
+    output, is_use_geocode = request_elastic(conn, geowk, geo_threshold=geo_threshold)
+
