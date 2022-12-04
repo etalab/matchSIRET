@@ -34,7 +34,7 @@ def get_match():
     
     geowk = geocode_worksites(wks)[0]
     
-    answer, found, useGeocode  = get_match_response(conn, geoworksite=geowk, siret_truth=geowk.siret, geo_threshold=geo_threshold)
+    answer, found, useGeocode, useAddress  = get_match_response(conn, geoworksite=geowk, siret_truth=geowk.siret, geo_threshold=geo_threshold)
 
     if answer:
         if found:
@@ -42,6 +42,7 @@ def get_match():
                 {
                     "match": True,
                     "with_geocoding": True if useGeocode else False,
+                    "with_address": True if useAddress else False,
                     "message": "Found",
                     
                     "original_name": name,
@@ -80,6 +81,7 @@ def get_info_siret():
     city = request.json["city"] if "city" in request.json else None
     address = request.json["address"] if "address" in request.json else None
     use_geocode = request.json["use_geocode"] if "use_geocode" in request.json else True # Geocode by default
+    use_address = request.json["use_address"] if "use_address" in request.json else True # Geocode by default
     
     wks = [WorkSiteName(**{
             "name": name,
@@ -90,7 +92,7 @@ def get_info_siret():
     
     geowk = geocode_worksites(wks)[0]
     
-    output, is_use_geocode = request_elastic(conn, geowk, geo_threshold=geo_threshold, use_geo=use_geocode)
+    output, is_use_geocode, is_use_address = request_elastic(conn, geowk, geo_threshold=geo_threshold, use_geo=use_geocode, use_address=use_address)
     output = check_if_same_score(output)
     return jsonify([o["_source"] for o in output] if output else [])
 

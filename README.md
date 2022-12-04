@@ -55,6 +55,29 @@ Si vous êtes un réutilisateur de ce code pour une mission spécifique, il peut
 
 _(Pour l'historie du projet : la méthodologie d'avant-projet est décrite sur le [wiki du programme 10%](https://github.com/etalab-ia/programme10pourcent/wiki/Ateliers-SIRETisation))_
 
+
+## API
+
+### Présentation
+
+Une API a été créée afin de pouvoir : 
+
+1) `/match` Tester son jeu de donnée
+
+Vérifier que le matching s'effectue bien entre le nom d'un établissement dans sa base et le nom officiel de l'insee. Pour cela, il faudra avoir des siret dans sa base pour vérifier a posteriori de la requête elastic si le résultat trouvé correspond bien à celui cherché. 
+
+Cette API teste une solution avec et sans géocodage de l'adresse : cela permet donc de connaître la qualité des adresses de sa base. Dans certains cas, l'utilisation du géocodage est intéressant (quand les adresses fournies ne sont pas de trop mauvaises qualité). Cela permet d'améliorer le score de confiance des résultats (d'autant plus que la source de l'index est la base SIRENE géocodée via la BAN). Dans d'autres cas, le géocoding n'est pas nécessaire et au contraire amène plus de flous (il s'agit des cas où les adresses ne sont vraiment pas de bonnes qualité).
+
+La réponse de l'API indiquera si le géocodage a été utilisé, ce qui permettra aux utilisateurs de savoir si celui-ci doit être utilisé ou non lors de la tentative de recherche d'établissement.
+
+2) `/search` Rechercher un SIRET
+
+Basé sur les résultats de l'api `/match`, l'utilisateur sait s'il doit utiliser le géocoding ou non. Il peut donc rechercher tous les résultats relatifs à l'établissement recherché en activant ou non le géocoding dans l'API.
+
+
+### Déploiement
+
+
 ## Projets open source liés à ce dépôt
 
 [SocialGouv](https://github.com/SocialGouv/recherche-entreprises) : recherche d'établissements d'entreprises, notamment pour des travaux sur les conventions collectives
