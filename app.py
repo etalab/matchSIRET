@@ -78,7 +78,8 @@ def get_info_siret():
     name = request.json["name"]
     postcode = request.json["postcode"] if "postcode" in request.json else None
     city = request.json["city"] if "city" in request.json else None
-    address = request.json["address"]
+    address = request.json["address"] if "address" in request.json else None
+    use_geocode = request.json["use_geocode"] if "use_geocode" in request.json else True # Geocode by default
     
     wks = [WorkSiteName(**{
             "name": name,
@@ -89,9 +90,9 @@ def get_info_siret():
     
     geowk = geocode_worksites(wks)[0]
     
-    output, is_use_geocode = request_elastic(conn, geowk, geo_threshold=geo_threshold, use_geo=True)
+    output, is_use_geocode = request_elastic(conn, geowk, geo_threshold=geo_threshold, use_geo=use_geocode)
     output = check_if_same_score(output)
-    return jsonify([o["_source"] for o in output])
+    return jsonify([o["_source"] for o in output] if output else [])
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')

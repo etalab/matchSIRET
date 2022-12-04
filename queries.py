@@ -69,18 +69,6 @@ def request_elastic(
 
         else:
             is_use_geocode = False
-            if geowk.__getattribute__("old_postcode"):
-                q["bool"]["should"].append(
-                    {
-                        "match": {"code_postal": geowk.__getattribute__("old_postcode")}
-                    }
-                )
-            if geowk.__getattribute__("old_cityname"):
-                q["bool"]["should"].append(
-                    {
-                        "match": {"libelle_commune": geowk.__getattribute__("old_cityname")}
-                    }
-                )
 
             if geowk.__getattribute__("old_address"):
                 q["bool"]["should"].append(
@@ -95,7 +83,19 @@ def request_elastic(
                         }
                     }
                 )
-
+        
+        if geowk.__getattribute__("old_postcode"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"code_postal": geowk.__getattribute__("old_postcode")}
+                }
+            )
+        if geowk.__getattribute__("old_cityname"):
+            q["bool"]["should"].append(
+                {
+                    "match": {"libelle_commune": geowk.__getattribute__("old_cityname")}
+                }
+            )
 
     for field in list(geowk.__dict__):
         if field in ["score", "citycode", "old_postcode", "old_cityname", "old_address", "address", "latitude", "longitude", "name"]:
