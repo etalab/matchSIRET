@@ -80,9 +80,15 @@ def get_info_siret():
     postcode = request.json["postcode"] if "postcode" in request.json else None
     city = request.json["city"] if "city" in request.json else None
     address = request.json["address"] if "address" in request.json else None
-    use_geocode = request.json["use_geocode"] if "use_geocode" in request.json else True # Geocode by default
-    use_address = request.json["use_address"] if "use_address" in request.json else True # Geocode by default
-    
+    if "use_geocode" in request.json:
+        use_geocode = False if request.json["use_geocode"] == "false" else True
+    else:
+        use_geocode = True
+    if "use_address" in request.json:
+        use_address = False if request.json["use_address"] == "false" else True
+    else:
+        use_address = True
+<
     wks = [WorkSiteName(**{
             "name": name,
             "postcode": postcode,

@@ -74,6 +74,20 @@ La réponse de l'API indiquera si le géocodage a été utilisé, ce qui permett
 
 Basé sur les résultats de l'api `/match`, l'utilisateur sait s'il doit utiliser le géocoding ou non. Il peut donc rechercher tous les résultats relatifs à l'établissement recherché en activant ou non le géocoding dans l'API.
 
+### Cas d'utilisation
+
+Je cherche à évaluer ma base établissement avec le cas suivant : 
+
+```
+SIRET : 34326262216640
+NOM : LIDL BILIERES
+ADRESSE : TRES MAUVAISE ADRESSE
+POSTCODE : 31300
+```
+
+je rentre l'ensemble de ces paramètres dans l'API : 
+
+
 
 ### Déploiement
 
