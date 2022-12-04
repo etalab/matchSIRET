@@ -88,7 +88,7 @@ def get_info_siret():
         use_address = False if request.json["use_address"] == "false" else True
     else:
         use_address = True
-<
+
     wks = [WorkSiteName(**{
             "name": name,
             "postcode": postcode,
