@@ -11,7 +11,7 @@ Les données proviennent de SIRENE et sont géolocalisées par ETALAB (https://f
 
 ## Déployer matchSIRET ***avec*** Onyxia
 
-1) Créer un service Elasticsearch [en indiquant le chemin de cette image](https://git.lab.sspcloud.fr/hby7ih/matchsiretimage) (tag:latest)
+1) Créer un service Elasticsearch [en indiquant le chemin de cette image](https://git.lab.sspcloud.fr/hby7ih/matchsiretimage) (dans le formulaire: Dépendance ElasticSearch, Image:  `git-registry.lab.sspcloud.fr/hby7ih/matchsiretimage`, ImageTag: `latest`)
 2) Créer un service JupyterLab [en indiquant le chemin du fichier d'initialisation](https://raw.githubusercontent.com/etalab/matchSIRET/main/init.sh). Des modifications du fichier d'intialisation, et notamment des chemins, peuvent être utiles selon votre version d'Onyxia.
 3) Dans JupyterLab, ouvrir le fichier `indexation/indexation.ipynb`, indiquer l'url de votre service Elasticsearch (qui figure dans le "README" de votre service Elastic dans votre compte sur Onyxia) dans la cellule correspondante, et exécuter l'ensemble des cellules (ce processus prend plusieurs heures)
 
